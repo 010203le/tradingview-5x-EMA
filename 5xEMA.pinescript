@@ -1,0 +1,41 @@
+//@version=5
+indicator(title="Moving Averages Exponential (EMA)", shorttitle="EMA", overlay=true, timeframe="", timeframe_gaps=true)
+
+// Inputs for EMA lengths
+len1 = input.int(7, minval=1, title="Length EMA1")
+len2 = input.int(26, minval=1, title="Length EMA2")
+len3 = input.int(50, minval=1, title="Length EMA3")
+len4 = input.int(100, minval=1, title="Length EMA4")
+len5 = input.int(200, minval=1, title="Length EMA5")
+
+src = input(close, title="Source")
+offset = input.int(title="Offset", defval=0, minval=-500, maxval=500, display=display.data_window)
+
+// Calculate EMAs
+ema1 = ta.ema(src, len1)
+ema2 = ta.ema(src, len2)
+ema3 = ta.ema(src, len3)
+ema4 = ta.ema(src, len4)
+ema5 = ta.ema(src, len5)
+
+// Plot EMAs
+plot(ema1, title="EMA7", color=color.blue, offset=offset)
+plot(ema2, title="EMA26", color=color.red, offset=offset)
+plot(ema3, title="EMA50", color=color.green, offset=offset)
+plot(ema4, title="EMA100", color=color.purple, offset=offset)
+plot(ema5, title="EMA200", color=color.orange, offset=offset)
+
+// Optional: Smoothing function
+ma(source, length, type) =>
+    switch type
+        "SMA" => ta.sma(source, length)
+        "EMA" => ta.ema(source, length)
+        "SMMA (RMA)" => ta.rma(source, length)
+        "WMA" => ta.wma(source, length)
+        "VWMA" => ta.vwma(source, length)
+
+typeMA = input.string(title="Method", defval="SMA", options=["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA"], group="Smoothing", display=display.data_window)
+smoothingLength = input.int(title="Length", defval=5, minval=1, maxval=100, group="Smoothing", display=display.data_window)
+
+smoothingLine = ma(src, smoothingLength, typeMA)
+plot(smoothingLine, title="Smoothing Line", color=#f37f20, offset=offset, display=display.none)
